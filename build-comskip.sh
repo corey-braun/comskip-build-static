@@ -3,6 +3,10 @@
 ## Set default variables
 IMAGE=comskip-build-static
 CONTAINER="$IMAGE"
+SCRIPT_PATH=${0%/*}
+if [ $SCRIPT_PATH = $0 ]; then
+    SCRIPT_PATH=.
+fi
 
 check_exitcode() { ## Args: <log message>
     if [ $? -ne 0 ]; then
@@ -13,7 +17,7 @@ check_exitcode() { ## Args: <log message>
 
 ## Build image if not already built
 if [ -z "$(docker images -q $IMAGE 2>/dev/null)" ]; then
-    docker build -t "$IMAGE" .
+    docker build -t "$IMAGE" "$SCRIPT_PATH"
     check_exitcode "Error building docker image '$IMAGE'"
 fi
 
@@ -21,8 +25,8 @@ fi
 docker run -dit --rm \
     --name "$CONTAINER" \
     --volume ./bin:/build/bin \
-    --env FFMPEG_VERSION=4.3.6 \
-    --env COMSKIP_TAR_DL=https://github.com/erikkaashoek/Comskip/archive/master.tar.gz \
+    --env FFMPEG_VERSION=5.0.1 \
+    --env COMSKIP_VERSION=master \
     "$IMAGE"
 check_exitcode "Error starting container '$CONTAINER'"
 

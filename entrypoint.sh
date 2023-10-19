@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 [ -z "$FFMPEG_VERSION" ] && echo "Required environment variable FFMPEG_VERSION is not set" >&2 && exit 1
-[ -z "$COMSKIP_TAR_DL" ] && echo "Required environment variable COMSKIP_TAR_DL is not set" >&2 && exit 1
+[ -z "$COMSKIP_VERSION" ] && echo "Required environment variable COMSKIP_VERSION is not set" >&2 && exit 1
 
 ## Download/extract tar file as needed
 dl_extract_tar() { ## Args: <download url> [output file]
@@ -15,7 +15,7 @@ dl_extract_tar() { ## Args: <download url> [output file]
         return 0
     fi
     if [ ! -f "$tar" ]; then
-        curl -sL "$1" -o "$tar"
+        curl -sSLo "$tar" "$1"
         [ $? -ne 0 ] && echo "Error downloading $tar from $1" >&2 && exit 1
     fi
     tar xf "$tar" --one-top-level --strip-components 1
@@ -35,11 +35,10 @@ trap - ERR
 cd ..
 
 ## Build comskip
-comskip_tar="comskip-${COMSKIP_TAR_DL##*/}"
-comskip_dir="${comskip_tar%\.tar*}"
-echo "Building comskip from branch '${comskip_dir#comskip-}'"
-dl_extract_tar "$COMSKIP_TAR_DL" "$comskip_tar"
-cd "$comskip_dir"
+comskip="comskip-$COMSKIP_VERSION"
+echo "Building comskip with reference $COMSKIP_VERSION"
+dl_extract_tar "https://api.github.com/repos/erikkaashoek/Comskip/tarball/$COMSKIP_VERSION" "$comskip.tar.gz"
+cd "$comskip"
 trap 'echo "Error building comskip" >&2; exit 1' ERR
 ./autogen.sh
 PKG_CONFIG_PATH=/build/ffmpeg-build/lib/pkgconfig ./configure --bindir=/build/bin --enable-static

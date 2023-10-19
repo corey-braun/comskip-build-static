@@ -4,8 +4,9 @@ LABEL org.opencontainers.image.ref.name "comskip-build-static"
 LABEL org.opencontainers.image.source "https://github.com/corey-braun/comskip-build-static"
 LABEL org.opencontainers.image.version "10-12-2023"
 
-ENV FFMPEG_VERSION 4.3.6
-ENV COMSKIP_TAR_DL https://github.com/erikkaashoek/Comskip/archive/master.tar.gz
+ARG DEBIAN_FRONTEND=noninteractive
+ENV FFMPEG_VERSION=5.0.1
+ENV COMSKIP_VERSION=master
 
 # Install dependencies
 RUN set -x \
